@@ -20,13 +20,15 @@ sudo pacman -S meson gjs gtk4 libadwaita packagekit
 #### Fedora
 
 ```bash
-sudo dnf install meson gjs gtk4 libadwaita PackageKit
+sudo dnf install meson gjs gtk4-devel libadwaita-devel PackageKit gettext pkg-config cmake glib2-devel
 ```
 
 #### Ubuntu / Debian
 
 ```bash
-sudo apt install meson gjs libgtk-4-1 libadwaita-1-0 packagekit
+sudo apt install meson gjs libgtk-4-1 libadwaita-1-0 packagekit \
+  gettext pkg-config cmake libglib2.0-dev-bin libglib2.0-dev \
+  gir1.2-gtk-4.0 gir1.2-adw-1
 ```
 
 ### 3. Build and run
@@ -47,14 +49,14 @@ sudo meson install -C build
 **Build:**
 - meson (>= 1.0.0)
 - gjs
+- gettext
+- pkg-config
+- cmake
+- glib2 development files
 
 **Runtime:**
 - gjs
 - gtk4
 - libadwaita
 - packagekit (for uninstalling system packages)
-
-The authentication dialog shown when PackageKit prompts for privileges
-is provided by your desktop environment's polkit agent (built into
-gnome-shell on GNOME, polkit-kde-agent on KDE, etc.) — no extra package
-needed.
+- GTK4 and Adwaita GObject Introspection data

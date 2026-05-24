@@ -1,20 +1,76 @@
 import Gio from 'gi://Gio';
+import GioUnix from 'gi://GioUnix';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 import { uninstallApp, classifyAppType, getAppTypeLabel } from '../managers/index.js';
 import { preserveScrollDuring } from './scroll.js';
 
-export function populateAppList(listBox) {
-    const apps = Gio.AppInfo.get_all()
-        .filter(app => app.should_show())
-        .sort((a, b) => {
-            const an = (a.get_display_name() ?? '').toLowerCase();
-            const bn = (b.get_display_name() ?? '').toLowerCase();
-            return an.localeCompare(bn);
-        });
-    apps.forEach(app => {
+// Extra desktop-entry roots that may be missing from XDG_DATA_DIRS in some environments (notably WSL)
+const EXTRA_APP_DIRS = [
+    '/var/lib/snapd/desktop/applications',
+    '/var/lib/flatpak/exports/share/applications',
+    GLib.build_filenamev([GLib.get_home_dir(), '.local/share/flatpak/exports/share/applications']),
+];
 
+function* iterDesktopFiles(dir) {
+    const dirFile = Gio.File.new_for_path(dir);
+    let enumerator;
+    
+    try {
+        enumerator = dirFile.enumerate_children(
+            'standard::name',
+            Gio.FileQueryInfoFlags.NONE,
+            null
+        );
+    } catch {
+        return;
+    }
+
+    try {
+        let info;
+        while ((info = enumerator.next_file(null)) !== null) {
+            const name = info.get_name();
+            if (name.endsWith('.desktop')) {
+                yield GLib.build_filenamev([dir, name]);
+            }
+        }
+    } finally {
+        enumerator.close(null);
+    }
+}
+
+function loadApps() {
+    const apps = Gio.AppInfo.get_all();
+    const byId = new Map();
+    for (const app of apps) {
+        const id = app.get_id();
+        if (id) byId.set(id, app);
+    }
+
+    for (const dir of EXTRA_APP_DIRS) {
+        const paths = iterDesktopFiles(dir);
+        for (const path of paths) {
+            const app = GioUnix.DesktopAppInfo.new_from_filename(path);
+            const id = app?.get_id();
+            if (id && !byId.has(id)) byId.set(id, app);
+        }
+    }
+
+    const appList = [...byId.values()];
+    const cleanedAppList = appList.filter(app => app.should_show())
+                                    .sort((a, b) =>
+                                        (a.get_display_name() ?? '').toLowerCase()
+                                            .localeCompare((b.get_display_name() ?? '').toLowerCase())
+                                    );
+
+    return cleanedAppList;
+}
+
+export function populateAppList(listBox) {
+    const apps = loadApps();
+
+    apps.forEach(app => {
         const displayName = app.get_display_name();
         const appId = app.get_id();
         const desktopPath = app.get_filename();
