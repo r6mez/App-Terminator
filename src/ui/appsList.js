@@ -3,7 +3,7 @@ import GioUnix from 'gi://GioUnix';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import { uninstallApp, classifyAppType, getAppTypeLabel } from '../managers/index.js';
+import { uninstallApp, classifyAppType, getAppTypeLabel, getAppDiskUsage } from '../managers/index.js';
 import { preserveScrollDuring } from './scroll.js';
 
 // Extra desktop-entry roots that may be missing from XDG_DATA_DIRS in some environments (notably WSL)
@@ -90,6 +90,17 @@ export function populateAppList(listBox) {
         });
 
         row.add_prefix(icon);
+
+        const sizeLabel = new Gtk.Label({
+            label: '…',
+            valign: Gtk.Align.CENTER,
+            css_classes: ['dim-label', 'app-disk-usage'],
+        });
+        row.add_suffix(sizeLabel);
+
+        getAppDiskUsage(appType, desktopPath).then(bytes => {
+            sizeLabel.set_label(bytes != null ? GLib.format_size(bytes) : '');
+        }).catch(() => sizeLabel.set_label(''));
 
         const badge = new Gtk.Label({
             label: getAppTypeLabel(appType),

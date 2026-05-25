@@ -92,6 +92,22 @@ function deleteFile(path) {
     }
 }
 
+export async function getDiskUsage(desktopFilePath) {
+    const binary = resolveAppImageBinary(desktopFilePath);
+    if (!binary) return null;
+    try {
+        const info = Gio.File.new_for_path(binary).query_info(
+            'standard::size',
+            Gio.FileQueryInfoFlags.NONE,
+            null,
+        );
+        return info.get_size();
+    } catch (e) {
+        console.warn('AppImage getDiskUsage failed:', e.message);
+        return null;
+    }
+}
+
 export async function uninstallAppImage(desktopFilePath, { removeBinary = false, binaryPath = null } = {}) {
     if (removeBinary && binaryPath) deleteFile(binaryPath);
     deleteFile(desktopFilePath);
