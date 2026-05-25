@@ -52,14 +52,15 @@ function ensureCssLoaded() {
 export const TerminatorWindow = GObject.registerClass({
     GTypeName: 'TerminatorWindow',
     Template: 'resource:///org/ramez/terminator/window.ui',
-    InternalChildren: ['appsListBox', 'searchBar', 'searchEntry', 'typeFilterDropdown'],
+    InternalChildren: ['appsListBox', 'searchEntry', 'typeFilterDropdown', 'sortDropdown'],
 }, class TerminatorWindow extends Adw.ApplicationWindow {
     constructor(application) {
         super({ application });
         ensureCssLoaded();
-        populateAppList(this._appsListBox);
+        populateAppList(this._appsListBox, () => this._appsListBox.invalidate_sort());
 
         this._appsListBox.set_filter_func(row => this._rowMatches(row));
+        this._appsListBox.set_sort_func((a, b) => this._compareRows(a, b));
 
         this._searchEntry.connect('search-changed', () => {
             this._appsListBox.invalidate_filter();
@@ -67,9 +68,22 @@ export const TerminatorWindow = GObject.registerClass({
         this._typeFilterDropdown.connect('notify::selected', () => {
             this._appsListBox.invalidate_filter();
         });
+        this._sortDropdown.connect('notify::selected', () => {
+            this._appsListBox.invalidate_sort();
+        });
+    }
 
-        this._searchBar.set_key_capture_widget(this);
-        this._searchBar.connect_entry(this._searchEntry);
+    _compareRows(a, b) {
+        const byName = (a.displayName ?? '').localeCompare(b.displayName ?? '', undefined, { sensitivity: 'base' });
+        if (this._sortDropdown.get_selected() === 1) {
+            // Size descending; rows without a known size fall to the bottom.
+            // Return -1/0/+1: GtkListBox marshals the return into a C int, so
+            // raw byte differences (≥ 2^31) would overflow and flip the sign.
+            const sa = a.diskUsage ?? -1;
+            const sb = b.diskUsage ?? -1;
+            if (sa !== sb) return sa > sb ? -1 : 1;
+        }
+        return byName;
     }
 
     _rowMatches(row) {

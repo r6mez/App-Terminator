@@ -3,6 +3,14 @@ import GLib from 'gi://GLib';
 
 const FIELD_CODE_RE = /%[fFuUdDnNickvm%]/g;
 
+Gio._promisify(Gio.Subprocess.prototype, 'communicate_utf8_async', 'communicate_utf8_finish');
+
+const STANDARD_BIN_DIRS = new Set([
+    '/bin', '/sbin', '/usr/bin', '/usr/sbin', '/usr/local/bin', '/usr/local/sbin',
+    GLib.build_filenamev([GLib.get_home_dir(), 'bin']),
+    GLib.build_filenamev([GLib.get_home_dir(), '.local/bin']),
+]);
+
 function readDesktopKey(desktopFilePath, key) {
     const file = Gio.File.new_for_path(desktopFilePath);
     const [ok, contents] = file.load_contents(null);
@@ -92,10 +100,25 @@ function deleteFile(path) {
     }
 }
 
+async function duBytes(path) {
+    const flags = Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE;
+    const subprocess = Gio.Subprocess.new(['du', '-sb', path], flags);
+    const [stdout] = await subprocess.communicate_utf8_async(null, null);
+    if (!subprocess.get_successful()) return null;
+    const n = parseInt(stdout.trim().split(/\s+/)[0], 10);
+    return Number.isFinite(n) ? n : null;
+}
+
+// Unlike resolveAppImageBinary (which is gated to $HOME because uninstall
+// refuses to touch system paths), size lookup is read-only — allow anywhere.
+// If the binary lives in a dedicated app folder (e.g. /opt/redisinsight/),
+// measure the whole folder; otherwise just stat the binary file.
 export async function getDiskUsage(desktopFilePath) {
-    const binary = resolveAppImageBinary(desktopFilePath);
+    const binary = getExecBinary(desktopFilePath);
     if (!binary) return null;
     try {
+        const parent = GLib.path_get_dirname(binary);
+        if (!STANDARD_BIN_DIRS.has(parent)) return duBytes(parent);
         const info = Gio.File.new_for_path(binary).query_info(
             'standard::size',
             Gio.FileQueryInfoFlags.NONE,

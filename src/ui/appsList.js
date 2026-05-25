@@ -67,7 +67,7 @@ function loadApps() {
     return cleanedAppList;
 }
 
-export function populateAppList(listBox) {
+export function populateAppList(listBox, onRowUpdated = null) {
     const apps = loadApps();
 
     apps.forEach(app => {
@@ -82,6 +82,8 @@ export function populateAppList(listBox) {
         });
 
         row.appType = appType;
+        row.displayName = displayName ?? '';
+        row.diskUsage = null;
         row.searchText = `${displayName ?? ''} ${appId ?? ''}`.toLowerCase();
 
         const icon = new Gtk.Image({
@@ -99,7 +101,9 @@ export function populateAppList(listBox) {
         row.add_suffix(sizeLabel);
 
         getAppDiskUsage(appType, desktopPath).then(bytes => {
+            row.diskUsage = bytes;
             sizeLabel.set_label(bytes != null ? GLib.format_size(bytes) : '');
+            if (onRowUpdated) onRowUpdated(row);
         }).catch(() => sizeLabel.set_label(''));
 
         const badge = new Gtk.Label({

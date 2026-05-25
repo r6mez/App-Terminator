@@ -4,9 +4,22 @@ import GLib from 'gi://GLib';
 Gio._promisify(Gio.Subprocess.prototype, 'wait_async', 'wait_finish');
 Gio._promisify(Gio.Subprocess.prototype, 'communicate_utf8_async', 'communicate_utf8_finish');
 
-// /var/lib/flatpak/exports/share/applications/org.gnome.Calculator.desktop
-// -> org.gnome.Calculator
+// Prefer X-Flatpak= from the desktop file when present: filename-based
+// inference breaks for multi-launcher apps like LibreOffice, whose desktop
+// files are e.g. `org.libreoffice.LibreOffice.base.desktop` but whose actual
+// Flatpak app id is `org.libreoffice.LibreOffice`.
 function getFlatpakAppId(desktopFilePath) {
+    const file = Gio.File.new_for_path(desktopFilePath);
+    const [ok, contents] = file.load_contents(null);
+    if (ok) {
+        const text = new TextDecoder().decode(contents);
+        for (const line of text.split('\n')) {
+            if (line.startsWith('X-Flatpak=')) {
+                const value = line.slice('X-Flatpak='.length).trim();
+                if (value) return value;
+            }
+        }
+    }
     const basename = GLib.path_get_basename(desktopFilePath);
     return basename.replace('.desktop', '');
 }

@@ -10,12 +10,6 @@
       <object class="AdwToolbarView">
         <child type="top">
           <object class="AdwHeaderBar">
-            <child type="start">
-              <object class="GtkToggleButton" id="searchButton">
-                <property name="icon-name">system-search-symbolic</property>
-                <property name="tooltip-text" translatable="yes">Search</property>
-              </object>
-            </child>
             <child type="end">
               <object class="GtkMenuButton">
                 <property name="primary">True</property>
@@ -27,17 +21,30 @@
           </object>
         </child>
         <child type="top">
-          <object class="GtkSearchBar" id="searchBar">
-            <property name="search-mode-enabled" bind-source="searchButton" bind-property="active" bind-flags="bidirectional|sync-create"/>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">6</property>
+            <property name="halign">center</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <property name="margin-top">6</property>
+            <property name="margin-bottom">6</property>
+            <child>
+              <object class="GtkSearchEntry" id="searchEntry">
+                <property name="placeholder-text" translatable="yes">Search applications</property>
+                <property name="width-request">360</property>
+              </object>
+            </child>
             <child>
               <object class="GtkBox">
                 <property name="orientation">horizontal</property>
-                <property name="spacing">6</property>
-                <property name="halign">center</property>
+                <property name="spacing">4</property>
                 <child>
-                  <object class="GtkSearchEntry" id="searchEntry">
-                    <property name="placeholder-text" translatable="yes">Search applications</property>
-                    <property name="width-request">360</property>
+                  <object class="GtkLabel">
+                    <property name="label" translatable="yes">Filter:</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
                   </object>
                 </child>
                 <child>
@@ -53,6 +60,33 @@
                           <item translatable="yes">System</item>
                           <item translatable="yes">User</item>
                           <item translatable="yes">Unknown</item>
+                        </items>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <property name="spacing">4</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label" translatable="yes">Sort:</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkDropDown" id="sortDropdown">
+                    <property name="tooltip-text" translatable="yes">Sort</property>
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item translatable="yes">Name</item>
+                          <item translatable="yes">Size</item>
                         </items>
                       </object>
                     </property>
