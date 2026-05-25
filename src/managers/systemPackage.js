@@ -84,120 +84,98 @@ async function createTransaction() {
     return transactionPath;
 }
 
-async function resolvePackageFromDesktop(desktopFilePath) {
+// Run a PackageKit transaction method, collecting data from `dataSignal` via
+// `onData` (return a value to store as the result; return undefined to ignore).
+// Resolves with the collected result when `Finished` fires, or with the value
+// returned by `onFinished(exitCode, currentResult)` if provided. Rejects on
+// `ErrorCode` or if the initial method call fails.
+async function runTransaction({ method, args, dataSignal, onData, onFinished }) {
     const connection = Gio.bus_get_sync(Gio.BusType.SYSTEM, null);
     const transactionPath = await createTransaction();
 
     return new Promise((resolve, reject) => {
-        let packageId = null;
+        const subs = [];
+        const cleanup = () => subs.forEach(id => connection.signal_unsubscribe(id));
+        const sub = (name, cb) => subs.push(connection.signal_subscribe(
+            PACKAGEKIT_BUS_NAME, TRANSACTION_INTERFACE, name,
+            transactionPath, null, Gio.DBusSignalFlags.NONE, cb,
+        ));
 
-        const packageSignalId = connection.signal_subscribe(
-            PACKAGEKIT_BUS_NAME,
-            TRANSACTION_INTERFACE,
-            'Package',
-            transactionPath,
-            null,
-            Gio.DBusSignalFlags.NONE,
-            (_conn, _sender, _path, _iface, _signal, params) => {
-                packageId = params.get_child_value(1).get_string()[0];
-            }
-        );
-
-        const finishedSignalId = connection.signal_subscribe(
-            PACKAGEKIT_BUS_NAME,
-            TRANSACTION_INTERFACE,
-            'Finished',
-            transactionPath,
-            null,
-            Gio.DBusSignalFlags.NONE,
-            () => {
-                connection.signal_unsubscribe(packageSignalId);
-                connection.signal_unsubscribe(finishedSignalId);
-
-                if (packageId) {
-                    resolve(packageId);
-                } else {
-                    reject(new Error('Could not resolve package from desktop file'));
+        let result;
+        if (dataSignal) {
+            sub(dataSignal, (_c, _s, _p, _i, _sig, params) => {
+                try {
+                    const v = onData(params);
+                    if (v !== undefined) result = v;
+                } catch (e) {
+                    console.warn(`Error parsing ${dataSignal} signal:`, e.message);
                 }
+            });
+        }
+        sub('Finished', (_c, _s, _p, _i, _sig, params) => {
+            cleanup();
+            if (onFinished) {
+                try {
+                    resolve(onFinished(params.get_child_value(0).get_uint32(), result));
+                } catch (e) {
+                    reject(e);
+                }
+            } else {
+                resolve(result);
             }
-        );
-
-        const errorSignalId = connection.signal_subscribe(
-            PACKAGEKIT_BUS_NAME,
-            TRANSACTION_INTERFACE,
-            'ErrorCode',
-            transactionPath,
-            null,
-            Gio.DBusSignalFlags.NONE,
-            (_conn, _sender, _path, _iface, _signal, params) => {
-                connection.signal_unsubscribe(packageSignalId);
-                connection.signal_unsubscribe(finishedSignalId);
-                connection.signal_unsubscribe(errorSignalId);
-                const errorDetails = params.get_child_value(1).get_string()[0];
-                reject(new Error(errorDetails));
-            }
-        );
+        });
+        sub('ErrorCode', (_c, _s, _p, _i, _sig, params) => {
+            cleanup();
+            reject(new Error(params.get_child_value(1).get_string()[0]));
+        });
 
         dbusCallAsync(
-            connection,
-            PACKAGEKIT_BUS_NAME,
-            transactionPath,
-            TRANSACTION_INTERFACE,
-            'SearchFiles',
-            new GLib.Variant('(tas)', [0, [desktopFilePath]]),
-            null
-        ).catch(reject);
+            connection, PACKAGEKIT_BUS_NAME, transactionPath,
+            TRANSACTION_INTERFACE, method, args, null,
+        ).catch(err => { cleanup(); reject(err); });
     });
 }
 
-async function removePackageById(packageId) {
-    const connection = Gio.bus_get_sync(Gio.BusType.SYSTEM, null);
-    const transactionPath = await createTransaction();
-
-    return new Promise((resolve, reject) => {
-        const finishedSignalId = connection.signal_subscribe(
-            PACKAGEKIT_BUS_NAME,
-            TRANSACTION_INTERFACE,
-            'Finished',
-            transactionPath,
-            null,
-            Gio.DBusSignalFlags.NONE,
-            (_conn, _sender, _path, _iface, _signal, params) => {
-                connection.signal_unsubscribe(finishedSignalId);
-                const exitCode = params.get_child_value(0).get_uint32();
-                if (exitCode === 1) { // PK_EXIT_ENUM_SUCCESS
-                    resolve(true);
-                } else {
-                    reject(new Error(`Package removal failed with exit code: ${exitCode}`));
-                }
-            }
-        );
-
-        const errorSignalId = connection.signal_subscribe(
-            PACKAGEKIT_BUS_NAME,
-            TRANSACTION_INTERFACE,
-            'ErrorCode',
-            transactionPath,
-            null,
-            Gio.DBusSignalFlags.NONE,
-            (_conn, _sender, _path, _iface, _signal, params) => {
-                connection.signal_unsubscribe(finishedSignalId);
-                connection.signal_unsubscribe(errorSignalId);
-                const errorDetails = params.get_child_value(1).get_string()[0];
-                reject(new Error(errorDetails));
-            }
-        );
-
-        dbusCallAsync(
-            connection,
-            PACKAGEKIT_BUS_NAME,
-            transactionPath,
-            TRANSACTION_INTERFACE,
-            'RemovePackages',
-            new GLib.Variant('(tasbb)', [0, [packageId], true, true]),
-            null
-        ).catch(reject);
+async function resolvePackageFromDesktop(desktopFilePath) {
+    const packageId = await runTransaction({
+        method: 'SearchFiles',
+        args: new GLib.Variant('(tas)', [0, [desktopFilePath]]),
+        dataSignal: 'Package',
+        onData: params => params.get_child_value(1).get_string()[0],
     });
+    if (!packageId) throw new Error('Could not resolve package from desktop file');
+    return packageId;
+}
+
+async function removePackageById(packageId) {
+    return runTransaction({
+        method: 'RemovePackages',
+        args: new GLib.Variant('(tasbb)', [0, [packageId], true, true]),
+        onFinished: exitCode => {
+            if (exitCode === 1) return true; // PK_EXIT_ENUM_SUCCESS
+            throw new Error(`Package removal failed with exit code: ${exitCode}`);
+        },
+    });
+}
+
+export async function getDiskUsage(desktopFilePath) {
+    try {
+        const packageId = await resolvePackageFromDesktop(desktopFilePath);
+        return await runTransaction({
+            method: 'GetDetails',
+            args: new GLib.Variant('(as)', [[packageId]]),
+            dataSignal: 'Details',
+            onData: params => {
+                const dict = params.get_child_value(0);
+                if (dict.get_type_string() !== 'a{sv}') return;
+                const sz = dict.lookup_value('size', GLib.VariantType.new('t'));
+                return sz ? Number(sz.get_uint64()) : undefined;
+            },
+        });
+    } catch (e) {
+        console.warn('getDiskUsage failed:', e.message);
+        return null;
+    }
 }
 
 export async function uninstallSystemPackage(desktopFilePath) {

@@ -3,11 +3,11 @@ import GioUnix from 'gi://GioUnix?version=2.0';
 import GLib from 'gi://GLib';
 import Adw from 'gi://Adw';
 
-import { uninstallSnap } from './snap.js';
-import { uninstallFlatpak } from './flatpak.js';
-import { uninstallSystemPackage } from './systemPackage.js';
+import { uninstallSnap, getDiskUsage as snapDiskUsage } from './snap.js';
+import { uninstallFlatpak, getDiskUsage as flatpakDiskUsage } from './flatpak.js';
+import { uninstallSystemPackage, getDiskUsage as systemPackageDiskUsage } from './systemPackage.js';
 import { uninstallUserLocal } from './userLocal.js';
-import { uninstallAppImage, isAppImage, resolveAppImageBinary } from './appImage.js';
+import { uninstallAppImage, isAppImage, resolveAppImageBinary, getDiskUsage as appImageDiskUsage } from './appImage.js';
 
 export const AppType = {
     SYSTEM_PACKAGE: 'system-package',
@@ -37,6 +37,19 @@ const UNINSTALLERS = {
     [AppType.SNAP]: uninstallSnap,
     [AppType.USER_LOCAL]: uninstallUserLocal,
 };
+
+const DISK_USAGE_LOOKUPS = {
+    [AppType.SYSTEM_PACKAGE]: systemPackageDiskUsage,
+    [AppType.FLATPAK]: flatpakDiskUsage,
+    [AppType.SNAP]: snapDiskUsage,
+    [AppType.APPIMAGE]: appImageDiskUsage,
+};
+
+export async function getAppDiskUsage(appType, desktopFilePath) {
+    const lookup = DISK_USAGE_LOOKUPS[appType];
+    if (!lookup) return null;
+    return lookup(desktopFilePath);
+}
 
 export function classifyAppType(desktopFilePath) {
     if (!desktopFilePath) return AppType.UNKNOWN;

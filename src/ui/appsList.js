@@ -3,7 +3,7 @@ import GioUnix from 'gi://GioUnix';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import { uninstallApp, classifyAppType, getAppTypeLabel } from '../managers/index.js';
+import { uninstallApp, classifyAppType, getAppTypeLabel, getAppDiskUsage } from '../managers/index.js';
 import { preserveScrollDuring } from './scroll.js';
 
 // Extra desktop-entry roots that may be missing from XDG_DATA_DIRS in some environments (notably WSL)
@@ -67,7 +67,7 @@ function loadApps() {
     return cleanedAppList;
 }
 
-export function populateAppList(listBox) {
+export function populateAppList(listBox, onRowUpdated = null) {
     const apps = loadApps();
 
     apps.forEach(app => {
@@ -82,6 +82,8 @@ export function populateAppList(listBox) {
         });
 
         row.appType = appType;
+        row.displayName = displayName ?? '';
+        row.diskUsage = null;
         row.searchText = `${displayName ?? ''} ${appId ?? ''}`.toLowerCase();
 
         const icon = new Gtk.Image({
@@ -90,6 +92,19 @@ export function populateAppList(listBox) {
         });
 
         row.add_prefix(icon);
+
+        const sizeLabel = new Gtk.Label({
+            label: '…',
+            valign: Gtk.Align.CENTER,
+            css_classes: ['dim-label', 'app-disk-usage'],
+        });
+        row.add_suffix(sizeLabel);
+
+        getAppDiskUsage(appType, desktopPath).then(bytes => {
+            row.diskUsage = bytes;
+            sizeLabel.set_label(bytes != null ? GLib.format_size(bytes) : '');
+            if (onRowUpdated) onRowUpdated(row);
+        }).catch(() => sizeLabel.set_label(''));
 
         const badge = new Gtk.Label({
             label: getAppTypeLabel(appType),

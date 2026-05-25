@@ -80,6 +80,19 @@ async function waitForSnapdChange(changeId) {
     }
 }
 
+export async function getDiskUsage(desktopFilePath) {
+    try {
+        const appName = getSnapName(desktopFilePath);
+        if (!appName) return null;
+        const { body } = await snapdRequest('GET', `/v2/snaps/${encodeURIComponent(appName)}`);
+        const size = body?.result?.['installed-size'];
+        return typeof size === 'number' ? size : null;
+    } catch (e) {
+        console.warn('Snap getDiskUsage failed:', e.message);
+        return null;
+    }
+}
+
 export async function uninstallSnap(desktopFilePath) {
     const appName = getSnapName(desktopFilePath);
     const { status, body } = await snapdRequest(
