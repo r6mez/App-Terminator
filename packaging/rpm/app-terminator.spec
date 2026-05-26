@@ -1,5 +1,5 @@
 Name:           app-terminator
-Version:        0.1.0
+Version:        0.2.0
 Release:        1%{?dist}
 Summary:        Unified manager for installed applications (system, Flatpak, Snap, AppImage)
 
@@ -56,5 +56,9 @@ and lets you uninstall any of them.
 %{_datadir}/terminator/
 
 %changelog
+* Tue May 26 2026 Ramez Medhat <iramezdev@gmail.com> - 0.2.0-1
+- Show per-app disk usage in the apps list, with sorting by name or size.
+- Persistent toolbar and broader size lookups (snap, flatpak, WSL paths).
+
 * Mon May 11 2026 Ramez Medhat <iramezdev@gmail.com> - 0.1.0-1
 - Initial package
