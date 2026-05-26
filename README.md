@@ -5,6 +5,7 @@ A simple but powerful tool for managing installed applications on your linux mac
 ## Features
 
 - Browse installed applications with their icons and identifiers
+- See per-app disk usage and sort the list by name or size to spot what's taking up space
 - Remove system packages, AppImages, Flatpaks, and Snaps from the same interface
 - Confirmation and authentication dialogs prevent accidental uninstallations
 - Search and filter installed apps by name or type
@@ -56,10 +57,10 @@ Download the latest `.deb` from the [releases page](https://github.com/r6mez/App
 
 ```bash
 # downloads the latest .deb file from the releases page
-wget https://github.com/r6mez/App-Terminator/releases/latest/download/app-terminator_0.1.0-1_all.deb
+wget https://github.com/r6mez/App-Terminator/releases/latest/download/app-terminator_0.2.0-1~noble1_all.deb
 
 # install the downloaded .deb file
-sudo apt install ./app-terminator_0.1.0-1_all.deb
+sudo apt install ./app-terminator_0.2.0-1~noble1_all.deb
 ```
 
 ## License
