@@ -1,3 +1,10 @@
+app-terminator (0.2.0-1~noble1) noble; urgency=medium
+
+  * Show per-app disk usage in the apps list, with sorting by name or size.
+  * Persistent toolbar and broader size lookups (snap, flatpak, WSL paths).
+
+ -- Ramez Medhat <iramezdev@gmail.com>  Tue, 26 May 2026 16:31:34 +0300
+
 app-terminator (0.1.0-2~noble1) noble; urgency=medium
 
   * Add gir1.2-gtk-4.0 and gir1.2-adw-1 to Depends so GJS can locate the
