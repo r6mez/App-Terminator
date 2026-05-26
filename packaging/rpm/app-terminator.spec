@@ -32,7 +32,7 @@ Snap, AppImage, and user-local desktop entries — in a single interface,
 and lets you uninstall any of them.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -n App-Terminator-%{version}
 
 %build
 %meson
