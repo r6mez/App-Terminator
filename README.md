@@ -62,7 +62,7 @@ wget https://github.com/r6mez/App-Terminator/releases/latest/download/app-termin
 # install the downloaded .deb file
 sudo apt install ./app-terminator_0.2.0-1~noble1_all.deb
 ```
-<!-- I expected the app-terminator package executable to be ``app-terminator`` but i had to extract the rpm just to find out its ``org.ramez.terminator`` so i added this line for users who don't the executable -->
+
 #### Run App Terminate:
 ```bash
 org.ramez.terminator
