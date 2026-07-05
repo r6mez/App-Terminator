@@ -63,6 +63,10 @@ wget https://github.com/r6mez/App-Terminator/releases/latest/download/app-termin
 sudo apt install ./app-terminator_0.2.0-1~noble1_all.deb
 ```
 
+#### Run App Terminate:
+```bash
+org.ramez.terminator
+```
 ## License
 
 Terminator is free software released under the [GNU General Public License v3.0](COPYING) or later.
