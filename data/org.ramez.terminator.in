@@ -12,6 +12,11 @@ imports.package.init({
   datadir: "@datadir@",
 });
 
+GLib.setenv('GETTEXT_PACKAGE', '@PACKAGE_NAME@', true);
+GLib.setenv('TEXTDOMAINDIR', GLib.build_filenamev([GLib.get_user_data_dir(), 'locale']), true);
+GLib.setenv('LANGUAGE', 'ru', true);
+imports.package.initGettext();
+
 // Detect if running from build directory and load resources
 const buildDir = GLib.path_get_dirname(programInvocationName);
 const srcResource = GLib.build_filenamev([buildDir, 'org.ramez.terminator.src.gresource']);

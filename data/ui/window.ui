@@ -3,7 +3,7 @@
   <requires lib="gtk" version="4.0"/>
   <requires lib="Adw" version="1.0"/>
   <template class="TerminatorWindow" parent="AdwApplicationWindow">
-    <property name="title" translatable="yes">Terminator</property>
+    <property name="title">Terminator</property>
     <property name="default-width">800</property>
     <property name="default-height">600</property>
     <property name="content">
@@ -11,10 +11,10 @@
         <child type="top">
           <object class="AdwHeaderBar">
             <child type="end">
-              <object class="GtkMenuButton">
+              <object class="GtkMenuButton" id="menuButton">
                 <property name="primary">True</property>
                 <property name="icon-name">open-menu-symbolic</property>
-                <property name="tooltip-text" translatable="yes">Main Menu</property>
+                <property name="tooltip-text">Main Menu</property>
                 <property name="menu-model">primary_menu</property>
               </object>
             </child>
@@ -31,7 +31,7 @@
             <property name="margin-bottom">6</property>
             <child>
               <object class="GtkSearchEntry" id="searchEntry">
-                <property name="placeholder-text" translatable="yes">Search applications</property>
+                <property name="placeholder-text">Search applications</property>
                 <property name="width-request">360</property>
               </object>
             </child>
@@ -40,8 +40,8 @@
                 <property name="orientation">horizontal</property>
                 <property name="spacing">4</property>
                 <child>
-                  <object class="GtkLabel">
-                    <property name="label" translatable="yes">Filter:</property>
+                  <object class="GtkLabel" id="filterLabel">
+                    <property name="label">Filter:</property>
                     <style>
                       <class name="dim-label"/>
                     </style>
@@ -49,17 +49,17 @@
                 </child>
                 <child>
                   <object class="GtkDropDown" id="typeFilterDropdown">
-                    <property name="tooltip-text" translatable="yes">Filter by type</property>
+                    <property name="tooltip-text">Filter by type</property>
                     <property name="model">
                       <object class="GtkStringList">
                         <items>
-                          <item translatable="yes">All</item>
-                          <item translatable="yes">Flatpak</item>
-                          <item translatable="yes">Snap</item>
-                          <item translatable="yes">AppImage</item>
-                          <item translatable="yes">System</item>
-                          <item translatable="yes">User</item>
-                          <item translatable="yes">Unknown</item>
+                          <item>All</item>
+                          <item>Flatpak</item>
+                          <item>Snap</item>
+                          <item>AppImage</item>
+                          <item>System</item>
+                          <item>User</item>
+                          <item>Unknown</item>
                         </items>
                       </object>
                     </property>
@@ -72,8 +72,8 @@
                 <property name="orientation">horizontal</property>
                 <property name="spacing">4</property>
                 <child>
-                  <object class="GtkLabel">
-                    <property name="label" translatable="yes">Sort:</property>
+                  <object class="GtkLabel" id="sortLabel">
+                    <property name="label">Sort:</property>
                     <style>
                       <class name="dim-label"/>
                     </style>
@@ -81,12 +81,12 @@
                 </child>
                 <child>
                   <object class="GtkDropDown" id="sortDropdown">
-                    <property name="tooltip-text" translatable="yes">Sort</property>
+                    <property name="tooltip-text">Sort</property>
                     <property name="model">
                       <object class="GtkStringList">
                         <items>
-                          <item translatable="yes">Name</item>
-                          <item translatable="yes">Size</item>
+                          <item>Name</item>
+                          <item>Size</item>
                         </items>
                       </object>
                     </property>
@@ -125,27 +125,27 @@
   <menu id="primary_menu">
     <section>
       <item>
-        <attribute name="label" translatable="yes">_Preferences</attribute>
+        <attribute name="label">_Preferences</attribute>
         <attribute name="action">app.preferences</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+        <attribute name="label">_Keyboard Shortcuts</attribute>
         <attribute name="action">app.shortcuts</attribute>
       </item>
     </section>
     <section>
       <item>
-        <attribute name="label" translatable="yes">View on _GitHub</attribute>
+        <attribute name="label">View on _GitHub</attribute>
         <attribute name="action">app.github</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_Donate</attribute>
+        <attribute name="label">_Donate</attribute>
         <attribute name="action">app.donate</attribute>
       </item>
     </section>
     <section>
       <item>
-        <attribute name="label" translatable="yes">_About Terminator</attribute>
+        <attribute name="label">_About Terminator</attribute>
         <attribute name="action">app.about</attribute>
       </item>
     </section>
