@@ -28,7 +28,7 @@ const APP_TYPE_LABELS = {
 };
 
 export function getAppTypeLabel(type) {
-    return APP_TYPE_LABELS[type] ?? 'Unknown';
+    return _(APP_TYPE_LABELS[type] ?? 'Unknown');
 }
 
 const UNINSTALLERS = {
@@ -69,12 +69,12 @@ export function classifyAppType(desktopFilePath) {
 function showResultDialog(parentWindow, success, appName, error = null) {
     const dialog = new Adw.MessageDialog({
         transient_for: parentWindow,
-        heading: success ? "Uninstall Complete" : "Uninstall Failed",
+        heading: success ? _("Uninstall Complete") : _("Uninstall Failed"),
         body: success
-            ? `${appName} has been successfully uninstalled.`
-            : `Could not uninstall ${appName}: ${error.message}`,
+            ? _("%s has been successfully uninstalled.").replace('%s', appName)
+            : _("Could not uninstall %s: %s").replace('%s', appName).replace('%s', error.message),
     });
-    dialog.add_response("ok", "OK");
+    dialog.add_response("ok", _("OK"));
     dialog.present();
 }
 
@@ -82,23 +82,23 @@ function uninstallAppImageFlow(parentWindow, appName, desktopFilePath, onSuccess
     const binaryPath = resolveAppImageBinary(desktopFilePath);
 
     const lines = [
-        `Uninstall ${appName}?`,
+        _("Uninstall %s?").replace('%s', appName),
         '',
-        `Launcher: ${desktopFilePath}`,
+        _("Launcher: %s").replace('%s', desktopFilePath),
     ];
-    if (binaryPath) lines.push(`AppImage: ${binaryPath}`);
-    else lines.push('AppImage binary could not be located in your home directory; only the launcher will be removed.');
+    if (binaryPath) lines.push(_("AppImage: %s").replace('%s', binaryPath));
+    else lines.push(_('AppImage binary could not be located in your home directory; only the launcher will be removed.'));
 
     const dialog = new Adw.MessageDialog({
         transient_for: parentWindow,
-        heading: "Uninstall AppImage",
+        heading: _("Uninstall AppImage"),
         body: lines.join('\n'),
     });
 
-    dialog.add_response("cancel", "Cancel");
-    dialog.add_response("launcher", "Remove launcher only");
+    dialog.add_response("cancel", _("Cancel"));
+    dialog.add_response("launcher", _("Remove launcher only"));
     if (binaryPath) {
-        dialog.add_response("both", "Remove launcher and AppImage");
+        dialog.add_response("both", _("Remove launcher and AppImage"));
         dialog.set_response_appearance("both", Adw.ResponseAppearance.DESTRUCTIVE);
     } else {
         dialog.set_response_appearance("launcher", Adw.ResponseAppearance.DESTRUCTIVE);
@@ -129,10 +129,10 @@ export function uninstallApp(parentWindow, appName, desktopId, desktopFilePath, 
     if (appType === AppType.UNKNOWN || !desktopFilePath) {
         const dialog = new Adw.MessageDialog({
             transient_for: parentWindow,
-            heading: "Cannot Uninstall",
-            body: `Cannot determine how to uninstall ${appName}.`,
+            heading: _("Cannot Uninstall"),
+            body: _("Cannot determine how to uninstall %s.").replace('%s', appName),
         });
-        dialog.add_response("ok", "OK");
+        dialog.add_response("ok", _("OK"));
         dialog.present();
         return;
     }
@@ -143,17 +143,17 @@ export function uninstallApp(parentWindow, appName, desktopId, desktopFilePath, 
     }
 
     const dialogBody = appType === AppType.USER_LOCAL
-        ? `Are you sure you want to uninstall ${appName}? This will remove the launcher, but associated files may remain in your home directory.`
-        : `Are you sure you want to uninstall ${appName}?`;
+        ? _("Are you sure you want to uninstall %s? This will remove the launcher, but associated files may remain in your home directory.").replace('%s', appName)
+        : _("Are you sure you want to uninstall %s?").replace('%s', appName);
 
     const dialog = new Adw.MessageDialog({
         transient_for: parentWindow,
-        heading: "Uninstall Request",
+        heading: _("Uninstall Request"),
         body: dialogBody,
     });
 
-    dialog.add_response("cancel", "Cancel");
-    dialog.add_response("remove", "Remove");
+    dialog.add_response("cancel", _("Cancel"));
+    dialog.add_response("remove", _("Remove"));
     dialog.set_response_appearance("remove", Adw.ResponseAppearance.DESTRUCTIVE);
 
     dialog.connect('response', async (self, response) => {

@@ -1,0 +1,266 @@
+# Russian translation for terminator
+# Copyright (C) 2026 Ramez Medhat
+# This file is distributed under the same license as the terminator package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: terminator 0.2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-15 22:44+0300\n"
+"PO-Revision-Date: 2026-07-15 22:44+0300\n"
+"Last-Translator: \n"
+"Language-Team: Russian\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: ../data/org.ramez.terminator.desktop.in:2
+#: ../data/org.ramez.terminator.metainfo.xml.in:7 ../data/ui/window.ui:6
+msgid "Terminator"
+msgstr "Terminator"
+
+#: ../data/org.ramez.terminator.desktop.in:8
+msgid "GTK;"
+msgstr "GTK;"
+
+#: ../data/org.ramez.terminator.desktop.in:11
+msgid "\"Unified linux uninstaller\""
+msgstr "\"Универсальный удалщик приложений для Linux\""
+
+#: ../data/org.ramez.terminator.metainfo.xml.in:8
+msgid "Unified manager for installed applications"
+msgstr "Универсальный менеджер установленных приложений"
+
+#: ../data/org.ramez.terminator.metainfo.xml.in:10
+msgid ""
+"Terminator is a GTK4 and libadwaita application that lists installed apps "
+"from multiple Linux packaging systems in a single interface and lets you "
+"uninstall any of them."
+msgstr ""
+"Terminator — это приложение на GTK4 и libadwaita, которое выводит список "
+"установленных приложений из различных систем пакетирования Linux в едином "
+"интерфейсе и позволяет удалить любое из них."
+
+#: ../data/org.ramez.terminator.metainfo.xml.in:15
+msgid "Supported package types:"
+msgstr "Поддерживаемые типы пакетов:"
+
+#: ../data/org.ramez.terminator.metainfo.xml.in:17
+msgid "System packages (via PackageKit)"
+msgstr "Системные пакеты (через PackageKit)"
+
+#: ../data/org.ramez.terminator.metainfo.xml.in:18
+msgid "Flatpak applications"
+msgstr "Приложения Flatpak"
+
+#: ../data/org.ramez.terminator.metainfo.xml.in:19
+msgid "Snap packages"
+msgstr "Пакеты Snap"
+
+#: ../data/org.ramez.terminator.metainfo.xml.in:20
+msgid "AppImage launchers"
+msgstr "Лаунчеры AppImage"
+
+#: ../data/org.ramez.terminator.metainfo.xml.in:21
+msgid "User-local desktop entries"
+msgstr "Локальные пользовательские desktop-файлы"
+
+#: ../data/org.ramez.terminator.metainfo.xml.in:26
+msgid "Ramez Medhat"
+msgstr "Ramez Medhat"
+
+#: ../data/org.ramez.terminator.metainfo.xml.in:47
+msgid "Main window listing installed applications"
+msgstr "Главное окно со списком установленных приложений"
+
+#: ../data/ui/shortcuts-dialog.ui:6
+msgid "Shortcuts"
+msgstr "Сочетания клавиш"
+
+#: ../data/ui/shortcuts-dialog.ui:9
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "Показать сочетания клавиш"
+
+#: ../data/ui/shortcuts-dialog.ui:15
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "Выйти"
+
+#: ../data/ui/window.ui:17
+msgid "Main Menu"
+msgstr "Главное меню"
+
+#: ../data/ui/window.ui:34
+msgid "Search applications"
+msgstr "Поиск приложений"
+
+#: ../data/ui/window.ui:44
+msgid "Filter:"
+msgstr "Фильтр:"
+
+#: ../data/ui/window.ui:52
+msgid "Filter by type"
+msgstr "Фильтр по типу"
+
+#: ../data/ui/window.ui:56
+msgid "All"
+msgstr "Все"
+
+#: ../data/ui/window.ui:57
+msgid "Flatpak"
+msgstr "Flatpak"
+
+#: ../data/ui/window.ui:58
+msgid "Snap"
+msgstr "Snap"
+
+#: ../data/ui/window.ui:59
+msgid "AppImage"
+msgstr "AppImage"
+
+#: ../data/ui/window.ui:60
+msgid "System"
+msgstr "Системные"
+
+#: ../data/ui/window.ui:61
+msgid "User"
+msgstr "Пользовательские"
+
+#: ../data/ui/window.ui:62 ../src/managers/index.js:31
+msgid "Unknown"
+msgstr "Неизвестные"
+
+#: ../data/ui/window.ui:76
+msgid "Sort:"
+msgstr "Сортировка:"
+
+#: ../data/ui/window.ui:84
+msgid "Sort"
+msgstr "Сортировка"
+
+#: ../data/ui/window.ui:88
+msgid "Name"
+msgstr "Название"
+
+#: ../data/ui/window.ui:89
+msgid "Size"
+msgstr "Размер"
+
+#: ../data/ui/window.ui:128
+msgid "_Preferences"
+msgstr "_Настройки"
+
+#: ../data/ui/window.ui:132
+msgid "_Keyboard Shortcuts"
+msgstr "_Сочетания клавиш"
+
+#: ../data/ui/window.ui:138
+msgid "View on _GitHub"
+msgstr "Смотреть на _GitHub"
+
+#: ../data/ui/window.ui:142
+msgid "_Donate"
+msgstr "_Поддержать"
+
+#: ../data/ui/window.ui:148
+msgid "_About Terminator"
+msgstr "_О приложении Terminator"
+
+#: ../src/main.js:57
+msgid "translator-credits"
+msgstr " translator-credits"
+
+#: ../src/managers/index.js:72
+msgid "Uninstall Complete"
+msgstr "Удаление завершено"
+
+#: ../src/managers/index.js:72
+msgid "Uninstall Failed"
+msgstr "Ошибка удаления"
+
+#: ../src/managers/index.js:74
+#, javascript-format
+msgid "%s has been successfully uninstalled."
+msgstr "%s успешно удалено."
+
+#: ../src/managers/index.js:75
+#, javascript-format
+msgid "Could not uninstall %s: %s"
+msgstr "Не удалось удалить %s: %s"
+
+#: ../src/managers/index.js:77 ../src/managers/index.js:135
+msgid "OK"
+msgstr "ОК"
+
+#: ../src/managers/index.js:85
+#, javascript-format
+msgid "Uninstall %s?"
+msgstr "Удалить %s?"
+
+#: ../src/managers/index.js:87
+#, javascript-format
+msgid "Launcher: %s"
+msgstr "Лаунчер: %s"
+
+#: ../src/managers/index.js:89
+#, javascript-format
+msgid "AppImage: %s"
+msgstr "AppImage: %s"
+
+#: ../src/managers/index.js:90
+msgid ""
+"AppImage binary could not be located in your home directory; only the "
+"launcher will be removed."
+msgstr ""
+"Бинарный файл AppImage не найден в домашней директории; будет удалён "
+"только лаунчер."
+
+#: ../src/managers/index.js:94
+msgid "Uninstall AppImage"
+msgstr "Удаление AppImage"
+
+#: ../src/managers/index.js:98 ../src/managers/index.js:155
+msgid "Cancel"
+msgstr "Отмена"
+
+#: ../src/managers/index.js:99
+msgid "Remove launcher only"
+msgstr "Удалить только лаунчер"
+
+#: ../src/managers/index.js:101
+msgid "Remove launcher and AppImage"
+msgstr "Удалить лаунчер и AppImage"
+
+#: ../src/managers/index.js:132
+msgid "Cannot Uninstall"
+msgstr "Невозможно удалить"
+
+#: ../src/managers/index.js:133
+#, javascript-format
+msgid "Cannot determine how to uninstall %s."
+msgstr "Не удалось определить способ удаления %s."
+
+#: ../src/managers/index.js:146
+#, javascript-format
+msgid ""
+"Are you sure you want to uninstall %s? This will remove the launcher, but "
+"associated files may remain in your home directory."
+msgstr ""
+"Вы уверены, что хотите удалить %s? Лаунчер будет удалён, но связанные "
+"файлы могут остаться в вашей домашней директории."
+
+#: ../src/managers/index.js:147
+#, javascript-format
+msgid "Are you sure you want to uninstall %s?"
+msgstr "Вы уверены, что хотите удалить %s?"
+
+#: ../src/managers/index.js:151
+msgid "Uninstall Request"
+msgstr "Запрос на удаление"
+
+#: ../src/managers/index.js:156
+msgid "Remove"
+msgstr "Удалить"

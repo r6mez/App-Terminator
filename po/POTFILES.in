@@ -3,6 +3,8 @@
 data/org.ramez.terminator.desktop.in
 data/org.ramez.terminator.metainfo.xml.in
 data/org.ramez.terminator.gschema.xml
+data/ui/shortcuts-dialog.ui
+data/ui/window.ui
 src/main.js
-src/window.js
-src/window.ui
+src/managers/index.js
+src/ui/window.js

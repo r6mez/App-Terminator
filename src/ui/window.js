@@ -19,6 +19,7 @@
  */
 
 import GObject from 'gi://GObject';
+import Gio from 'gi://Gio';
 import Gdk from 'gi://Gdk';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
@@ -52,11 +53,34 @@ function ensureCssLoaded() {
 export const TerminatorWindow = GObject.registerClass({
     GTypeName: 'TerminatorWindow',
     Template: 'resource:///org/ramez/terminator/window.ui',
-    InternalChildren: ['appsListBox', 'searchEntry', 'typeFilterDropdown', 'sortDropdown'],
+    InternalChildren: ['appsListBox', 'searchEntry', 'typeFilterDropdown', 'sortDropdown',
+                       'menuButton', 'filterLabel', 'sortLabel'],
 }, class TerminatorWindow extends Adw.ApplicationWindow {
     constructor(application) {
         super({ application });
         ensureCssLoaded();
+
+        this.title = _('Terminator');
+        this._searchEntry.placeholder_text = _('Search applications');
+        this._filterLabel.label = _('Filter:');
+        this._sortLabel.label = _('Sort:');
+        this._menuButton.tooltip_text = _('Main Menu');
+
+        const filterStrings = [_('All'), 'Flatpak', 'Snap', 'AppImage', _('System'), _('User'), _('Unknown')];
+        this._typeFilterDropdown.model = Gtk.StringList.new(filterStrings);
+        this._typeFilterDropdown.tooltip_text = _('Filter by type');
+
+        this._sortDropdown.model = Gtk.StringList.new([_('Name'), _('Size')]);
+        this._sortDropdown.tooltip_text = _('Sort');
+
+        const menu = new Gio.Menu();
+        menu.append(_('_Preferences'), 'app.preferences');
+        menu.append(_('_Keyboard Shortcuts'), 'app.shortcuts');
+        menu.append(_('View on _GitHub'), 'app.github');
+        menu.append(_('_Donate'), 'app.donate');
+        menu.append(_('_About Terminator'), 'app.about');
+        this._menuButton.menu_model = menu;
+
         populateAppList(this._appsListBox, () => this._appsListBox.invalidate_sort());
 
         this._appsListBox.set_filter_func(row => this._rowMatches(row));
@@ -76,9 +100,6 @@ export const TerminatorWindow = GObject.registerClass({
     _compareRows(a, b) {
         const byName = (a.displayName ?? '').localeCompare(b.displayName ?? '', undefined, { sensitivity: 'base' });
         if (this._sortDropdown.get_selected() === 1) {
-            // Size descending; rows without a known size fall to the bottom.
-            // Return -1/0/+1: GtkListBox marshals the return into a C int, so
-            // raw byte differences (≥ 2^31) would overflow and flip the sign.
             const sa = a.diskUsage ?? -1;
             const sb = b.diskUsage ?? -1;
             if (sa !== sb) return sa > sb ? -1 : 1;

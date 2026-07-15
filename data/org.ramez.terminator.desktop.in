@@ -7,5 +7,5 @@ Type=Application
 Categories=Utility;
 Keywords=GTK;
 StartupNotify=true
-DBusActivatable=true
+DBusActivatable=false
 Comment="Unified linux uninstaller"

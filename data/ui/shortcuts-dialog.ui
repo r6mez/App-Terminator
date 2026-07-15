@@ -3,16 +3,16 @@
   <object class="AdwShortcutsDialog" id="shortcuts_dialog">
     <child>
       <object class="AdwShortcutsSection">
-        <property name="title" translatable="yes">Shortcuts</property>
+        <property name="title">Shortcuts</property>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes" context="shortcut window">Show Shortcuts</property>
+            <property name="title">Show Shortcuts</property>
             <property name="action-name">app.shortcuts</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes" context="shortcut window">Quit</property>
+            <property name="title">Quit</property>
             <property name="action-name">app.quit</property>
           </object>
         </child>

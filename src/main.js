@@ -20,11 +20,13 @@
 
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk?version=4.0';
 import Adw from 'gi://Adw?version=1';
 
 import { TerminatorWindow } from './ui/window.js';
 
+imports.package.localedir = GLib.build_filenamev([GLib.get_user_data_dir(), 'locale']);
 pkg.initGettext();
 pkg.initFormat();
 
